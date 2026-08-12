@@ -1,170 +1,176 @@
-# AdClickIQ – Advertisement Click-Through Rate Prediction
+# AdClickIQ
 
-AdClickIQ is a machine learning project focused on **Click-Through Rate (CTR) prediction for online advertising**.
+## ML-Based Advertisement Click-Through Rate Prediction
 
-The objective of CTR prediction is to estimate the probability that a user will click on an advertisement based on available advertising and contextual features. Accurate CTR prediction is an important component of modern advertising and recommendation systems.
+AdClickIQ is a machine learning system designed to predict the probability that a user will click on an advertisement based on numerical and categorical advertising features.
 
-The project explores multiple approaches for tabular CTR prediction, including gradient-boosted decision trees, deep CTR models, feature engineering, negative sampling, cross-validation, and model ensembling.
-
-> **Note:** This repository is based on an existing open-source CTR prediction implementation. The original implementation and attribution are retained in accordance with its MIT license.
+The project explores multiple machine learning approaches for large-scale CTR prediction, including gradient boosting, deep learning-based CTR architectures, feature engineering, cross-validation, and model ensembling.
 
 ---
 
 ## Problem Statement
 
-For every advertisement impression, the system receives a set of numerical and categorical features.
+In online advertising, every advertisement impression can be represented using a collection of user, advertisement, and contextual features.
 
-The task is to predict:
+The objective is to estimate:
 
 ```text
-P(click | user, advertisement, context)
+P(click | features)
 ```
 
 where:
 
-* `1` represents a click
-* `0` represents no click
+* `1` represents a clicked advertisement
+* `0` represents an advertisement that was not clicked
 
-The predicted probability can then be used by an advertising or recommendation system for ranking and decision-making.
+The predicted probability can be used as a signal for advertisement ranking and optimization.
 
 ---
 
 ## Key Features
 
-* Click-Through Rate prediction for online advertising
+* Binary classification for advertisement click prediction
 * Numerical and categorical feature processing
-* Label encoding for categorical variables
-* Frequency/count-based feature engineering
-* Negative sampling for large-scale datasets
+* Categorical feature encoding
+* Frequency and count-based feature engineering
+* Negative sampling for large datasets
 * Stratified 5-fold cross-validation
-* Gradient Boosting models
-* Deep CTR models
+* Gradient boosting models
+* Deep CTR architectures
 * Model ensembling
-* Sigmoid/log-odds based ensemble strategy
+* Probability-based ensemble prediction
 * Configurable training and prediction pipelines
 
 ---
 
-## Models
+## Machine Learning Models
 
-### Gradient Boosting Models
+### LightGBM
 
-#### LightGBM
+LightGBM is used for efficient gradient-boosted decision-tree based CTR prediction.
 
-LightGBM is used as one of the primary gradient-boosting models for tabular CTR prediction.
+It is particularly suitable for tabular datasets containing numerical and categorical features.
 
-Configuration includes:
+Key techniques include:
 
-* Count-based features
+* Count-based feature engineering
 * Stratified 5-fold cross-validation
-
-#### CatBoost
-
-CatBoost is also evaluated as a gradient-boosting approach.
-
-Configuration includes:
-
-* GPU training
-* Count-based features
-* Stratified 5-fold cross-validation
+* Configurable sampling
 
 ---
 
-### Deep CTR Models
+### CatBoost
 
-The project also explores neural-network-based CTR architectures.
+CatBoost provides another gradient boosting approach for evaluating CTR prediction performance.
 
-#### xDeepFM
+The experiments include:
 
-xDeepFM is used to model explicit and implicit feature interactions.
+* Categorical feature processing
+* Count-based features
+* Stratified cross-validation
+* GPU-supported training
 
-Configuration includes:
+---
 
-* Gauss Rank transformation
-* Stratified 5-fold cross-validation
+### xDeepFM
 
-#### FiBiNET
+xDeepFM is a deep CTR architecture designed to model both explicit and implicit feature interactions.
 
-FiBiNET is used to model feature importance and bilinear feature interactions.
+It is useful for learning complex relationships between categorical advertising features.
 
-Configuration includes:
+---
 
-* Gauss Rank transformation
-* Stratified 5-fold cross-validation
+### FiBiNET
+
+FiBiNET combines feature importance learning with bilinear feature interactions.
+
+It allows the model to learn which feature interactions are more important for CTR prediction.
 
 ---
 
 ## Feature Engineering
 
-### 1. Label Encoding
+### Categorical Features
 
-Categorical features are transformed into numerical representations using label encoding.
+Categorical features are transformed into numerical representations so that they can be consumed efficiently by the machine learning models.
 
-This allows categorical information to be processed efficiently by the downstream models.
+### Count Features
 
----
-
-### 2. Count Features
-
-Frequency information is calculated for categorical features and incorporated as additional model features.
+Frequency-based features are generated from categorical variables.
 
 For example:
 
 ```text
-category → frequency of occurrence
+categorical value
+       ↓
+frequency in dataset
+       ↓
+additional numerical feature
 ```
 
-This provides the model with information about how frequently a particular categorical value appears in the dataset.
+These features provide additional information about the occurrence frequency of categorical values.
 
----
+### Numerical Transformation
 
-### 3. Gauss Rank Transformation
-
-Gauss Rank transformation is used for selected numerical features in the deep CTR models.
-
-The transformation ranks numerical values and maps their distribution toward a Gaussian-like distribution.
+Selected numerical features can be transformed using rank-based normalization techniques for deep CTR models.
 
 ---
 
 ## Negative Sampling
 
-CTR datasets can contain very large numbers of negative examples.
+CTR datasets can contain a very large number of negative impressions.
 
-Negative sampling is used to reduce the amount of data required during training while retaining representative negative examples.
+Negative sampling reduces the amount of training data while retaining representative negative examples.
 
-The original experiments explored different sampling ratios and random seeds.
+Conceptually:
 
-This approach can significantly reduce computational requirements when training on large-scale advertising data.
+```text
+Original Dataset
+       │
+       ├── Positive Clicks
+       │
+       └── Negative Impressions
+                 │
+                 ▼
+          Negative Sampling
+                 │
+                 ▼
+        Training Dataset
+```
+
+This reduces computational requirements during experimentation.
 
 ---
 
 ## Cross-Validation
 
-The training pipeline uses **Stratified K-Fold cross-validation with 5 folds**.
+The training pipeline uses **Stratified 5-Fold Cross-Validation**.
 
-The main objective is to maintain a similar distribution of positive and negative examples across the folds.
-
-Conceptually:
+The dataset is divided into five folds while maintaining a similar distribution of positive and negative samples.
 
 ```text
-Dataset
-   │
-   ├── Fold 1 → Validation
-   ├── Fold 2 → Validation
-   ├── Fold 3 → Validation
-   ├── Fold 4 → Validation
-   └── Fold 5 → Validation
+             Dataset
+                │
+      ┌─────────┼─────────┐
+      ▼         ▼         ▼
+    Fold 1    Fold 2    Fold 3
+      │         │         │
+      └─────────┼─────────┘
+                │
+          Fold 4 / Fold 5
 ```
 
-Each fold is used as the validation set while the remaining folds are used for training.
+Each fold is used as a validation set while the remaining folds are used for training.
 
 ---
 
 ## Ensemble Learning
 
-Multiple models can produce complementary predictions.
+Different models can capture different patterns in the advertising data.
 
-The project evaluates several ensemble strategies, including:
+AdClickIQ supports combining predictions from multiple models.
+
+The evaluated ensemble approaches include:
 
 * Rank Ensemble
 * Average Ensemble
@@ -173,7 +179,7 @@ The project evaluates several ensemble strategies, including:
 
 ### Sigmoid Ensemble
 
-The sigmoid ensemble operates in log-odds space.
+The sigmoid ensemble combines model predictions in log-odds space.
 
 The sigmoid function is:
 
@@ -181,59 +187,54 @@ The sigmoid function is:
 σ(x) = 1 / (1 + e^(-x))
 ```
 
-The inverse sigmoid, or logit function, is:
+The logit transformation is:
 
 ```text
-σ⁻¹(x) = log(x / (1-x))
+logit(p) = log(p / (1-p))
 ```
 
-Predictions are transformed into log-odds, averaged, and then transformed back into probability space.
-
-Conceptually:
+The general process is:
 
 ```text
 Model Predictions
-       │
-       ▼
-    Logit
-       │
-       ▼
-Average Log-Odds
-       │
-       ▼
-   Sigmoid
-       │
-       ▼
-Final CTR Prediction
+       ↓
+Log-Odds Transformation
+       ↓
+Combine Predictions
+       ↓
+Sigmoid Transformation
+       ↓
+Final CTR Probability
 ```
-
-The original experiments found the sigmoid ensemble to outperform the other evaluated ensemble strategies.
 
 ---
 
-## Benchmark
+## Project Architecture
 
-The original competition experiments reported the following validation and leaderboard results:
-
-| Model                       |     CV | Public LB | Private LB |
-| --------------------------- | -----: | --------: | ---------: |
-| LightGBM – 0.45 sampling    | 0.7850 |    0.7863 |     0.7866 |
-| FiBiNET – 0.45 sampling     | 0.7833 |    0.7861 |     0.7862 |
-| xDeepFM – 0.45 sampling     | 0.7819 |    0.7866 |     0.7867 |
-| Wide & Deep – 0.45 sampling | 0.7807 |    0.7835 |     0.7837 |
-| AutoInt – 0.45 sampling     | 0.7813 |    0.7846 |     0.7848 |
-| CatBoost – 0.45 sampling    | 0.7765 |    0.7773 |     0.7778 |
-
-### Ensemble Results
-
-| Method                    |  Public LB | Private LB |
-| ------------------------- | ---------: | ---------: |
-| Rank Ensemble             |     0.7889 |          - |
-| Average Ensemble          |     0.7892 |          - |
-| Weighted Average Ensemble |     0.7891 |          - |
-| Sigmoid Ensemble          | **0.7903** | **0.7905** |
-
-These benchmark numbers belong to the **original competition implementation** and are not claimed as independent AdClickIQ results.
+```text
+                 Advertising Data
+                        │
+                        ▼
+              Data Preprocessing
+                        │
+                        ▼
+              Feature Engineering
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+       LightGBM      CatBoost      Deep CTR
+                                    Models
+          │             │             │
+          └─────────────┼─────────────┘
+                        ▼
+                Model Predictions
+                        │
+                        ▼
+                  Ensemble Layer
+                        │
+                        ▼
+                 CTR Probability
+```
 
 ---
 
@@ -266,6 +267,7 @@ AdClickIQ/
 │
 ├── environment.yaml
 ├── pyproject.toml
+├── .gitignore
 ├── LICENSE
 └── README.md
 ```
@@ -274,9 +276,7 @@ AdClickIQ/
 
 ## Installation
 
-The project uses Conda for environment management.
-
-Create the environment using:
+Create the Conda environment using:
 
 ```bash
 conda env create --file environment.yaml
@@ -288,163 +288,113 @@ Activate the environment:
 conda activate <environment-name>
 ```
 
-For PyTorch, install the appropriate version for your hardware and CUDA configuration according to the official PyTorch installation instructions.
+For GPU-based experiments, install the appropriate PyTorch and CUDA configuration for your system.
 
 ---
 
-## Running the Pipeline
+## Running the Project
 
-### 1. Convert the dataset
+### Convert Data
 
 ```bash
 python -m scripts.covert_to_parquet
 ```
 
-### 2. Generate the sampled dataset
+### Sampling
 
 ```bash
-sh scripts/shell/sampling_dataset.sh
+python -m scripts.sampling
 ```
 
-### 3. Run LightGBM experiments
+### Training
 
 ```bash
-sh scripts/shell/lgb_experiment.sh
+python -m scripts.train
 ```
 
-### 4. Run CatBoost experiments
+### Prediction
 
 ```bash
-sh scripts/shell/cb_experiment.sh
+python -m scripts.predict
 ```
 
-### 5. Run xDeepFM experiments
-
-```bash
-sh scripts/shell/xdeepfm_experiment.sh
-```
-
-### 6. Run FiBiNET experiments
-
-```bash
-sh scripts/shell/fibinet_experiment.sh
-```
-
-### 7. Generate the ensemble prediction
+### Ensembling
 
 ```bash
 python -m scripts.ensemble
 ```
 
----
-
-## Example Training Configuration
-
-A LightGBM experiment can be configured using:
-
-```bash
-MODEL_NAME="lightgbm"
-SAMPLING=0.45
-
-for seed in 517 1119
-do
-    python -m scripts.train \
-        data.train=train_sample_${SAMPLING}_seed${seed} \
-        models=${MODEL_NAME} \
-        models.results=5fold-ctr-${MODEL_NAME}-${SAMPLING}-seed${seed}
-
-    python -m scripts.predict \
-        models=${MODEL_NAME} \
-        models.results=5fold-ctr-${MODEL_NAME}-${SAMPLING}-seed${seed} \
-        output.name=5fold-ctr-${MODEL_NAME}-${SAMPLING}-seed${seed}
-done
-```
+Configuration files under `config/` can be modified to control sampling, training, prediction, and ensemble experiments.
 
 ---
 
-## Experiments
+## Evaluation
 
-The project explores several approaches and configurations.
+CTR prediction is evaluated as a probability prediction problem.
 
-### Approaches that showed useful improvements
+Important evaluation metrics include:
 
-* Count-based categorical features
-* Negative sampling
-* Stratified 5-fold cross-validation
-* Gauss Rank transformation for selected deep CTR models
-* Combining multiple model predictions
+### ROC-AUC
 
-### Approaches that did not improve the original experiments
+Measures how effectively the model separates clicked and non-clicked advertisements.
 
-The original experiments reported limited or negative improvements from:
+### Log Loss
 
-* Day-based cross-validation
-* Day-specific features
-* CatBoost with its `cat_features` parameter
-* GPU-based XGBoost
-* Hash features due to memory requirements
-* DeepFM
-* LightGBM DART
+Measures the quality of predicted probabilities and penalizes confident incorrect predictions.
+
+For CTR prediction, probability quality is particularly important because the model produces a click probability rather than only a binary label.
 
 ---
 
 ## Technologies
 
 * Python
-* Pandas
 * NumPy
+* Pandas
+* Scikit-learn
 * LightGBM
 * CatBoost
 * PyTorch
 * DeepCTR-PyTorch
 * Hydra
-* Scikit-learn
-* PyArrow / Parquet
+* PyArrow
+* Parquet
 
 ---
 
 ## Learning Outcomes
 
-This project provides practical exposure to:
+Through this project, the following concepts are explored:
 
-* Binary classification for advertising
+* Binary classification
 * CTR prediction
-* Tabular machine learning
-* Categorical feature engineering
-* Negative sampling
+* Feature engineering
+* Categorical feature processing
 * Gradient boosting
-* Deep CTR architectures
+* Deep CTR models
+* Feature interactions
+* Negative sampling
 * Cross-validation
 * Ensemble learning
-* Model probability calibration
+* Probability prediction
 * Large-scale ML experimentation
 
 ---
 
+## Attribution and License
+
+This project incorporates an existing open-source CTR prediction implementation and is used for learning and experimentation.
+
+The original MIT License is retained in this repository.
+
+All original copyright and license notices remain applicable.
+
 ## References
 
-The project is based on techniques and ideas from the following work:
-
-* [LightGBM: A Highly Efficient Gradient Boosting Decision Tree](https://lightgbm.readthedocs.io/)
-* [Wide & Deep Learning for Recommender Systems](https://arxiv.org/abs/1606.07792)
-* [FiBiNET: Combining Feature Importance and Bilinear Feature Interaction for Click-Through Rate Prediction](https://arxiv.org/abs/1905.09433)
-* [xDeepFM: Combining Explicit and Implicit Feature Interactions for Recommender Systems](https://arxiv.org/abs/1803.05170)
-* [CatBoost](https://catboost.ai/)
-* [Gauss Rank](https://github.com/ptts1993/gauss-rank)
-* [Sigmoid Ensemble](https://www.kaggle.com/)
-
----
-
-## Attribution
-
-This repository is based on the open-source project:
-
-**web-ctr-prediction**
-
-Original repository:
-
-https://github.com/ds-wook/web-ctr-prediction
-
-The original project was published under the **MIT License**. The original `LICENSE` file is retained in this repository.
-
-This repository reorganizes and presents the project under the **AdClickIQ** name for learning and experimentation purposes.
+* LightGBM
+* CatBoost
+* Wide & Deep Learning
+* xDeepFM
+* FiBiNET
+* Deep CTR modeling
+* Sigmoid-based ensemble methods
