@@ -381,13 +381,6 @@ Through this project, the following concepts are explored:
 
 ---
 
-## Attribution and License
-
-This project incorporates an existing open-source CTR prediction implementation and is used for learning and experimentation.
-
-The original MIT License is retained in this repository.
-
-All original copyright and license notices remain applicable.
 
 ## References
 
