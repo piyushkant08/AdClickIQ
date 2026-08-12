@@ -1,0 +1,10 @@
+path: input/web-ctr-prediction/
+meta: res/meta/
+shift: 1
+train: train_sample_0.45_seed517
+test: test
+submit: sample_submission
+target: Click
+n_splits: 5
+seed: 1119
+sampling: 0.3

@@ -1,0 +1,31 @@
+defaults:
+  - _self_
+  - data: dataset
+  - generator: features
+  - models: lightgbm
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+
+output:
+  path: output
+  submission: sample_submission
+  name: sigmoid-ensemble-final-4models-2sample
+
+preds:
+- 5fold-ctr-lightgbm-0.4-seed414
+- 5fold-ctr-lightgbm-0.4-seed602
+- 5fold-ctr-lightgbm-0.45-seed517
+- 5fold-ctr-lightgbm-0.45-seed1119
+- 5fold-ctr-fibinet-0.4-seed414
+- 5fold-ctr-fibinet-0.4-seed602
+- 5fold-ctr-fibinet-0.45-seed517
+- 5fold-ctr-fibinet-0.45-seed1119
+- 5fold-ctr-catboost-0.45-seed517
+- 5fold-ctr-catboost-0.45-seed1119
+- 5fold-ctr-xdeepfm-0.45-seed517
+- 5fold-ctr-xdeepfm-0.45-seed1119
